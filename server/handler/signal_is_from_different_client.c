@@ -1,0 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal_is_from_different_client.c                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bcosta-b <bcosta-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/17 16:53:43 by bcosta-b          #+#    #+#             */
+/*   Updated: 2025/11/17 17:00:21 by bcosta-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minitalk_server.h"
+
+int	signal_is_from_different_client(siginfo_t *info)
+{
+	return (g_state.client_pid != info->si_pid);
+}

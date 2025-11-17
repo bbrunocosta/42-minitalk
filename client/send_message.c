@@ -1,0 +1,71 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   send_message.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bcosta-b <bcosta-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/06 09:02:31 by bcosta-b          #+#    #+#             */
+/*   Updated: 2025/11/17 16:47:28 by bcosta-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minitalk_client.h"
+
+volatile sig_atomic_t	g_ack_received = 0;
+
+void	ack_handler(int sig)
+{
+	(void)sig;
+	g_ack_received = 1;
+}
+
+void	send_bit(pid_t server_pid, int bit)
+{
+	int	sig;
+	int	timeout;
+
+	sig = to_signal(bit);
+	while (1)
+	{
+		g_ack_received = 0;
+		if (kill(server_pid, sig) == -1)
+			print_error_and_exit("Error sending signal\n");
+		timeout = 5000;
+		while (!g_ack_received && timeout > 0)
+		{
+			usleep(10);
+			timeout -= 10;
+		}
+		if (g_ack_received)
+			return ;
+		usleep(100 + (getpid() % 100));
+	}
+}
+
+void	send_char(pid_t server_pid, unsigned char c)
+{
+	int	i;
+	int	bit;
+
+	i = 0;
+	while (i < 8)
+	{
+		bit = (c >> i) & 1;
+		send_bit(server_pid, bit);
+		i++;
+	}
+}
+
+void	send_message(pid_t server_pid, const char *msg)
+{
+	int	i;
+
+	i = 0;
+	while (msg[i])
+	{
+		send_char(server_pid, msg[i]);
+		i++;
+	}
+	send_char(server_pid, '\0');
+}
