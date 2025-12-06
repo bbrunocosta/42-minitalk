@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send_message.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bcosta-b <bcosta-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bcosta-b <bcosta-b@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 09:02:31 by bcosta-b          #+#    #+#             */
-/*   Updated: 2025/11/24 17:47:12 by bcosta-b         ###   ########.fr       */
+/*   Updated: 2025/12/06 18:36:28 by bcosta-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,17 @@ void	ack_handler(int sig)
 	g_ack_received = 1;
 }
 
-void send_bit(pid_t server_pid, int bit)
+void	send_bit(pid_t server_pid, int bit)
 {
-    int sig = to_signal(bit);
+	int	sig;
 
-    g_ack_received = 0;
-    if (kill(server_pid, sig) == -1)
-        print_error_and_exit("Error sending signal\n");
-
-    while (!g_ack_received)
-        pause();  
+	sig = to_signal(bit);
+	g_ack_received = 0;
+	if (kill(server_pid, sig) == -1)
+		print_error_and_exit("Error sending signal\n");
+	while (!g_ack_received)
+		pause();
 }
-
 
 void	send_char(pid_t server_pid, unsigned char c)
 {
